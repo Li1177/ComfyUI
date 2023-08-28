@@ -1242,7 +1242,15 @@ class KSamplerAdvanced:
 
 class SaveImage:
     def __init__(self):
-        self.output_dir = folder_paths.get_output_directory()
+        # 如果连接到Google Drive，修改输出路径为Google Drive中的指定文件夹
+        if '/content/drive' in folder_paths.get_output_directory():
+            self.output_dir = '/content/drive/MyDrive/ComfyUI_output'
+            # 检查路径是否存在，不存在则创建
+            if not os.path.exists(self.output_dir):
+                os.makedirs(self.output_dir)
+        else:
+            self.output_dir = folder_paths.get_output_directory()
+        
         self.type = "output"
         self.prefix_append = ""
 
