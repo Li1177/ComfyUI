@@ -1241,13 +1241,14 @@ class KSamplerAdvanced:
         return common_ksampler(model, noise_seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise=denoise, disable_noise=disable_noise, start_step=start_at_step, last_step=end_at_step, force_full_denoise=force_full_denoise)
 
 class SaveImage:
-    def __init__(self):
-        self.output_dir = folder_paths.get_output_directory()
+    def __init__(self, use_google_drive=False):
+        self.use_google_drive = use_google_drive
+        self.output_dir = self.get_output_directory()
         self.type = "output"
         self.prefix_append = ""
 
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": 
                     {"images": ("IMAGE", ),
                      "filename_prefix": ("STRING", {"default": "ComfyUI"})},
@@ -1261,32 +1262,45 @@ class SaveImage:
 
     CATEGORY = "image"
 
+    def get_output_directory(self):
+        if self.use_google_drive:
+            return "/content/drive/MyDrive/ComfyUI_output"
+        else:
+            return "/content/ComfyUI_output"  # Modify this if you have a different default output directory
+
     def save_images(self, images, filename_prefix="ComfyUI", prompt=None, extra_pnginfo=None):
         filename_prefix += self.prefix_append
-        full_output_folder, filename, counter, subfolder, filename_prefix = folder_paths.get_save_image_path(filename_prefix, self.output_dir, images[0].shape[1], images[0].shape[0])
+        full_output_folder = self.output_dir
         results = list()
-        for image in images:
+        for counter, image in enumerate(images):
             i = 255. * image.cpu().numpy()
             img = Image.fromarray(np.clip(i, 0, 255).astype(np.uint8))
-            metadata = None
-            if not args.disable_metadata:
-                metadata = PngInfo()
-                if prompt is not None:
-                    metadata.add_text("prompt", json.dumps(prompt))
-                if extra_pnginfo is not None:
-                    for x in extra_pnginfo:
-                        metadata.add_text(x, json.dumps(extra_pnginfo[x]))
+            metadata = PngInfo()
+            if prompt is not None:
+                metadata.add_text("prompt", json.dumps(prompt))
+            if extra_pnginfo is not None:
+                for x in extra_pnginfo:
+                    metadata.add_text(x, json.dumps(extra_pnginfo[x]))
 
-            file = f"{filename}_{counter:05}_.png"
+            file = f"{filename_prefix}_{counter:05}.png"
             img.save(os.path.join(full_output_folder, file), pnginfo=metadata, compress_level=4)
             results.append({
                 "filename": file,
-                "subfolder": subfolder,
+                "subfolder": None,
                 "type": self.type
             })
-            counter += 1
 
-        return { "ui": { "images": results } }
+        return {"ui": {"images": results}}
+
+# 在运行应用时判断是否挂载了Google Drive
+use_google_drive = False
+if "google.colab" in str(get_ipython()):
+    from google.colab import drive
+    drive.mount('/content/drive')
+    use_google_drive = True
+
+# 创建 SaveImage 的实例，并传入 use_google_drive 的值
+save_image_app = SaveImage(use_google_drive)
 
 class PreviewImage(SaveImage):
     def __init__(self):
