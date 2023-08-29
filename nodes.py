@@ -244,14 +244,16 @@ class VAEDecode:
 class VAEDecodeTiled:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": { "samples": ("LATENT", ), "vae": ("VAE", )}}
+        return {"required": {"samples": ("LATENT", ), "vae": ("VAE", ),
+                             "tile_size": ("INT", {"default": 512, "min": 192, "max": 4096, "step": 64})
+                            }}
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "decode"
 
     CATEGORY = "_for_testing"
 
-    def decode(self, vae, samples):
-        return (vae.decode_tiled(samples["samples"]), )
+    def decode(self, vae, samples, tile_size):
+        return (vae.decode_tiled(samples["samples"], tile_x=tile_size // 8, tile_y=tile_size // 8, ), )
 
 class VAEEncode:
     @classmethod
@@ -280,15 +282,17 @@ class VAEEncode:
 class VAEEncodeTiled:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": { "pixels": ("IMAGE", ), "vae": ("VAE", )}}
+        return {"required": {"pixels": ("IMAGE", ), "vae": ("VAE", ),
+                             "tile_size": ("INT", {"default": 512, "min": 320, "max": 4096, "step": 64})
+                            }}
     RETURN_TYPES = ("LATENT",)
     FUNCTION = "encode"
 
     CATEGORY = "_for_testing"
 
-    def encode(self, vae, pixels):
+    def encode(self, vae, pixels, tile_size):
         pixels = VAEEncode.vae_encode_crop_pixels(pixels)
-        t = vae.encode_tiled(pixels[:,:,:,:3])
+        t = vae.encode_tiled(pixels[:,:,:,:3], tile_x=tile_size, tile_y=tile_size, )
         return ({"samples":t}, )
 
 class VAEEncodeForInpaint:
@@ -1242,11 +1246,7 @@ class KSamplerAdvanced:
 
 class SaveImage:
     def __init__(self):
-        # 如果链接了Google Drive并且存在对应的output目录，则使用Google Drive的路径，否则使用原始的默认路径。
-        if os.path.exists("/content/drive/MyDrive/ComfyUI_output"):
-            self.output_dir = "/content/drive/MyDrive/ComfyUI_output"
-        else:
-            self.output_dir = folder_paths.get_output_directory()
+        self.output_dir = folder_paths.get_output_directory()
         self.type = "output"
         self.prefix_append = ""
 
@@ -1294,10 +1294,7 @@ class SaveImage:
 
 class PreviewImage(SaveImage):
     def __init__(self):
-        self.output_dir = "/content/ComfyUI/temp"
-        # 确保目录存在
-        if not os.path.exists(self.output_dir):
-            os.makedirs(self.output_dir)
+        self.output_dir = folder_paths.get_temp_directory()
         self.type = "temp"
         self.prefix_append = "_temp_" + ''.join(random.choice("abcdefghijklmnopqrstupvxyz") for x in range(5))
 
