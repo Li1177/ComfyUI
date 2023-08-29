@@ -1294,7 +1294,10 @@ class SaveImage:
 
 class PreviewImage(SaveImage):
     def __init__(self):
-        self.output_dir = folder_paths.get_temp_directory()
+        self.output_dir = "/content/ComfyUI/temp"
+        # 确保目录存在
+        if not os.path.exists(self.output_dir):
+            os.makedirs(self.output_dir)
         self.type = "temp"
         self.prefix_append = "_temp_" + ''.join(random.choice("abcdefghijklmnopqrstupvxyz") for x in range(5))
 
