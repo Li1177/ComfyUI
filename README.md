@@ -1,3 +1,28 @@
+### 🌟 New Features & Enhancements 🌟
+
+First and foremost, I'd like to express my immense gratitude to the original author for their outstanding work on this project. Building upon their foundation, I've introduced some improvements and additional features in this fork to enhance the user experience. Here's a detailed breakdown of the enhancements:
+
+#### 1. Efficient Data Storage
+
+To optimize the use of Google Drive space and integrate more efficiently with Colab, I've made adjustments to the data storage path:
+
+- If connected to Google Drive, the project will now only save the `output` folder on Drive.
+- The primary code and data remain locally on Colab to ensure peak performance.
+- Even when opting to save on Drive, it remains seamless for users to fetch updates from the original project.
+
+#### 2. Downloading Model Enhancements
+
+In a bid to boost the model downloading speed and efficiency, I've incorporated the following:
+
+- Implemented **thread pooling** to manage multiple download tasks concurrently, speeding up the download process.
+- Adopted the **aria2** downloading tool, known for its support of multiple protocols and capability to download a single file from multiple sources concurrently, further amplifying download efficiency.
+
+#### 📌 Try it out! 
+
+Experience these enhancements firsthand by accessing my improved [Colab instance here]([YOUR_COLAB_LINK](https://colab.research.google.com/drive/1_Mg-s7menUTW5a4BO_oC6MUZjYao8Vrt)).
+
+### Original Author's Instructions
+
 ComfyUI
 =======
 A powerful and modular stable diffusion GUI and backend.
@@ -210,3 +235,7 @@ I wanted to learn how Stable Diffusion worked in detail. I also wanted something
 ### Who is this for?
 
 This is for anyone that wants to make complex workflows with SD or that wants to learn more how SD works. The interface follows closely how SD works and the code should be much more simple to understand than other SD UIs.
+
+### 🙏 Acknowledgments 🙏
+
+A heartfelt thank you to the original author. This project has been immensely valuable to the community, and I've found it inspiring and educational. I hope my enhancements can add value to what's already an exceptional project. If you have any feedback or suggestions, please don't hesitate to get in touch with me.
