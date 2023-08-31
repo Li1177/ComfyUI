@@ -19,7 +19,8 @@ In a bid to boost the model downloading speed and efficiency, I've incorporated 
 
 #### 📌 Try it out! 
 
-Experience these enhancements firsthand by accessing my improved [Colab instance here]([YOUR_COLAB_LINK](https://colab.research.google.com/drive/1_Mg-s7menUTW5a4BO_oC6MUZjYao8Vrt)).
+... for the ComfyUI project and would like to see it in action on Colab, you can try out my enhanced version <a href="https://colab.research.google.com/drive/1_Mg-s7menUTW5a4BO_oC6MUZjYao8Vrt" target="_blank">here</a>
+
 
 ### Original Author's Instructions
 
